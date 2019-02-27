@@ -13,6 +13,14 @@ from django.utils.datastructures import OrderedSet
 
 from django_extensions.management.shells import import_objects
 from django_extensions.management.utils import signalcommand
+from slackclient import SlackClient
+import json
+import requests
+
+slack_token = os.environ["SLACK_API_TOKEN"]
+slack_client = SlackClient(slack_token)
+writable_channel_id = os.environ["SLACK_SERVER_LOGIN_CHANNEL_ID"]
+webhook_url = "https://hooks.slack.com/services/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"
 
 
 def use_vi_mode():
@@ -102,6 +110,12 @@ class Command(BaseCommand):
             default=False,
             dest='no_browser',
             help='Don\'t open the notebook in a browser after startup.'
+        )
+        parser.add_argument(
+            '--writable', action='store_true',
+            default=False,
+            dest='writable',
+            help='Switch to writable mode'
         )
 
     def run_from_argv(self, argv):
@@ -398,6 +412,34 @@ class Command(BaseCommand):
 
         return app_name
 
+    def set_router(self, writable):
+        """
+        Sets the router options. If there is no --writable passed i.e. options["writable"] is false then
+        router is set to read only mode by setting the router.db_for_write flag to None.
+        This will throw up an error of NoneType when a user tries to write changes to DB.
+        :param options:
+        :return: db_for_write
+        """
+        from django.db import router
+        if writable:
+            email = raw_input("Please enter email : ")
+            while True:
+                import re
+                if re.match("^[A-Za-z0-9\.\+_-]+@doselect.com$", email.lower()):
+                    message = "DoNut with email {}, has switched to write mode. :computer:"
+                    response = requests.post(webhook_url, data=json.dumps(message),
+                                             headers={'Content-Type': 'application/json'})
+                    if response.status_code != 200:
+                        print("Error sending Slack message please contact admin. Switching to read only.")
+                        router.db_for_write = None
+                    break
+                else:
+                    email = raw_input("Please enter correct email : ")
+
+        else:
+            router.db_for_write = None
+            print "Read-Only mode set."
+
     @signalcommand
     def handle(self, *args, **options):
         use_kernel = options['kernel']
@@ -408,6 +450,7 @@ class Command(BaseCommand):
         use_ptpython = options['ptpython']
         use_ptipython = options['ptipython']
         verbosity = options["verbosity"]
+        writable = options["writable"]
         print_sql = getattr(settings, 'SHELL_PLUS_PRINT_SQL', False)
         truncate = getattr(settings, 'SHELL_PLUS_PRINT_SQL_TRUNCATE', 1000)
 
@@ -473,6 +516,8 @@ class Command(BaseCommand):
         shell = None
         shell_name = "any"
         self.set_application_name(options)
+        # Set router mode to read only if there is no writable flag
+        self.set_router(writable)
         if use_kernel:
             shell = self.get_kernel(options)
             shell_name = "IPython Kernel"
