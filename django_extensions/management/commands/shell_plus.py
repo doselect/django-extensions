@@ -4,6 +4,8 @@ import six
 import sys
 import time
 import traceback
+import json
+import requests
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -13,14 +15,10 @@ from django.utils.datastructures import OrderedSet
 
 from django_extensions.management.shells import import_objects
 from django_extensions.management.utils import signalcommand
-from slackclient import SlackClient
-import json
-import requests
 
-slack_token = os.environ["SLACK_API_TOKEN"]
-slack_client = SlackClient(slack_token)
-writable_channel_id = os.environ["SLACK_SERVER_LOGIN_CHANNEL_ID"]
-webhook_url = "https://hooks.slack.com/services/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"
+
+writable_channel_id = os.environ["SLACK_SHELL_LOGIN_CHANNEL_ID"]
+webhook_url = os.environ["SLACK_SHELL_LOGIN_WEBHOOK"]
 
 
 def use_vi_mode():
@@ -421,16 +419,23 @@ class Command(BaseCommand):
         :return: db_for_write
         """
         from django.db import router
+        from time import sleep
         if writable:
             email = raw_input("Please enter email : ")
             while True:
                 import re
                 if re.match("^[A-Za-z0-9\.\+_-]+@doselect.com$", email.lower()):
-                    message = "DoNut with email {}, has switched to write mode. :computer:"
+                    message = {
+                        "text": "DoNut with email {}, has switched to write mode. :computer:".format(email.lower()),
+                        "channel": writable_channel_id,
+                        "icon_emoji": ":desktop-computer:",
+                        "username": "Django-shell-bot"
+                        }
                     response = requests.post(webhook_url, data=json.dumps(message),
                                              headers={'Content-Type': 'application/json'})
                     if response.status_code != 200:
-                        print("Error sending Slack message please contact admin. Switching to read only.")
+                        print("Error sending Slack message please contact admin. Switching to read only mode.")
+                        sleep(2)
                         router.db_for_write = None
                     break
                 else:
@@ -439,6 +444,7 @@ class Command(BaseCommand):
         else:
             router.db_for_write = None
             print "Read-Only mode set."
+            sleep(2)
 
     @signalcommand
     def handle(self, *args, **options):
@@ -516,8 +522,9 @@ class Command(BaseCommand):
         shell = None
         shell_name = "any"
         self.set_application_name(options)
-        # Set router mode to read only if there is no writable flag
-        self.set_router(writable)
+        # Set router mode to read only if there is no writable flag iin PRODUCTION environment
+        if os.environ.get('ENVIRONMENT') == 'PRODUCTION':
+            self.set_router(writable)
         if use_kernel:
             shell = self.get_kernel(options)
             shell_name = "IPython Kernel"

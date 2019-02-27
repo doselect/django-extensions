@@ -117,7 +117,7 @@ for dirpath, dirnames, filenames in os.walk(extensions_dir):
 
 version = __import__('django_extensions').__version__
 # Requests is kept to 2.9.1 because of PyToolbox
-install_requires = ['six>=1.2', 'slackclient', 'requests==2.9.1']
+install_requires = ['six>=1.2']
 extras_require = {}
 
 if int(setuptools.__version__.split(".", 1)[0]) < 18:
