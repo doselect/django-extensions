@@ -420,6 +420,7 @@ class Command(BaseCommand):
         """
         from django.db import router
         from time import sleep
+        from pyfiglet import Figlet
         if writable:
             email = raw_input("Please enter email : ")
             while True:
@@ -437,13 +438,14 @@ class Command(BaseCommand):
                         print("Error sending Slack message please contact admin. Switching to read only mode.")
                         sleep(2)
                         router.db_for_write = None
+                    print Figlet(font='straight').renderText('Hello {}, Welcome to DoSelect Shell Plus.')
                     break
                 else:
                     email = raw_input("Please enter correct email : ")
 
         else:
             router.db_for_write = None
-            print "Read-Only mode set."
+            print Figlet(font='twopoint').renderText('Entering read-only mode')
             sleep(2)
 
     @signalcommand
