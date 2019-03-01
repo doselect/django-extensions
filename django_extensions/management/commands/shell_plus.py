@@ -428,7 +428,8 @@ class Command(BaseCommand):
                 if re.match("^[A-Za-z0-9\.\+_-]+@doselect.com$", email.lower()):
                     message = {
                         "text": "DoNut with email {} and shell user {}, "
-                                "has switched to write mode. :computer:".format(email.lower(), os.environ('SUDO_USER')),
+                                "has switched to write mode. :computer:".format(email.lower(),
+                                                                                os.environ.get('SUDO_USER')),
                         "channel": writable_channel_id,
                         "icon_emoji": ":desktop_computer:",
                         "username": "Django_shell_bot"
