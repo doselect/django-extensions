@@ -429,8 +429,8 @@ class Command(BaseCommand):
                     message = {
                         "text": "DoNut with email {}, has switched to write mode. :computer:".format(email.lower()),
                         "channel": writable_channel_id,
-                        "icon_emoji": ":desktop-computer:",
-                        "username": "Django-shell-bot"
+                        "icon_emoji": ":desktop_computer:",
+                        "username": "Django_shell_bot"
                         }
                     response = requests.post(webhook_url, data=json.dumps(message),
                                              headers={'Content-Type': 'application/json'})
@@ -438,7 +438,9 @@ class Command(BaseCommand):
                         print("Error sending Slack message please contact admin. Switching to read only mode.")
                         sleep(2)
                         router.db_for_write = None
-                    print Figlet(font='straight').renderText('Hello {}, Welcome to DoSelect Shell Plus.')
+                    print Figlet(font='starwars').renderText('Hello {}'.format(email.lower().split('@')[0]))
+                    print Figlet(font='puffy').renderText('Welcome to DoSelect Shell Plus.')
+                    sleep(2)
                     break
                 else:
                     email = raw_input("Please enter correct email : ")
