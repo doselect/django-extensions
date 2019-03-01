@@ -438,8 +438,9 @@ class Command(BaseCommand):
                         print("Error sending Slack message please contact admin. Switching to read only mode.")
                         sleep(2)
                         router.db_for_write = None
-                    print Figlet(font='starwars').renderText('Hello {}'.format(email.lower().split('@')[0]))
-                    print Figlet(font='puffy').renderText('Welcome to DoSelect Shell Plus.')
+                    print Figlet(font='starwars', justify='center'
+                                 ).renderText('Hello {}'.format(email.lower().split('@')[0]))
+                    print Figlet(font='puffy', justify='center').renderText('Welcome to DoSelect Shell Plus.')
                     sleep(2)
                     break
                 else:
