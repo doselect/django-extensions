@@ -530,7 +530,7 @@ class Command(BaseCommand):
         shell_name = "any"
         self.set_application_name(options)
         # Set router mode to read only if there is no writable flag iin PRODUCTION environment
-        if os.environ.get('ENVIRONMENT') == 'PRODUCTION':
+        if os.environ.get('ENVIRONMENT') == 'DEVELOPMENT':
             self.set_router(writable)
         if use_kernel:
             shell = self.get_kernel(options)
