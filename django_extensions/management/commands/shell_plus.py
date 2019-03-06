@@ -17,8 +17,8 @@ from django_extensions.management.shells import import_objects
 from django_extensions.management.utils import signalcommand
 
 
-writable_channel_id = os.environ["SLACK_SHELL_LOGIN_CHANNEL_ID"]
-webhook_url = os.environ["SLACK_SHELL_LOGIN_WEBHOOK"]
+writable_channel_id = os.environ.get("SLACK_SHELL_LOGIN_CHANNEL_ID")
+webhook_url = os.environ.get("SLACK_SHELL_LOGIN_WEBHOOK")
 
 
 def use_vi_mode():
