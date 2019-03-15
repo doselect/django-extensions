@@ -427,10 +427,15 @@ class Command(BaseCommand):
             while True:
                 import re
                 if re.match("^[A-Za-z0-9\.\+_-]+@doselect.com$", email.lower()):
+                    purpose = raw_input("State your purpose and access shall be given : ")
+                    user_ = os.environ.get('SUDO_USER')
                     message = {
                         "text": "DoNut with email {} and shell user {}, "
-                                "has switched to write mode. :computer:".format(email.lower(),
-                                                                                os.environ.get('SUDO_USER')),
+                                "has switched to write mode. :computer: "
+                                "{}'s purpose is {}".format(email.lower(),
+                                                            user_,
+                                                            user_,
+                                                            purpose),
                         "channel": writable_channel_id,
                         "icon_emoji": ":desktop_computer:",
                         "username": "Django_shell_bot"
