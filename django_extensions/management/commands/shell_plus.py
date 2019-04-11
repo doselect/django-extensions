@@ -422,8 +422,10 @@ class Command(BaseCommand):
         from django.db import router
         from time import sleep
         from pyfiglet import Figlet
+        import sys
         if writable:
             email = raw_input("Please enter email : ")
+            sys.ps1 = "\x1b[1;49;31m(WRITABLE)>>>\x1b[0m"
             while True:
                 import re
                 if re.match("^[A-Za-z0-9\.\+_-]+@doselect.com$", email.lower()):
@@ -455,6 +457,7 @@ class Command(BaseCommand):
                     email = raw_input("Please enter correct email : ")
 
         else:
+            sys.ps1 = "\033[01;33m(WRITABLE)>>>\033[00m"
             router.db_for_write = None
             print Figlet(font='twopoint').renderText('Entering read-only mode')
             sleep(2)
