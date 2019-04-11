@@ -425,7 +425,8 @@ class Command(BaseCommand):
         import sys
         if writable:
             email = raw_input("Please enter email : ")
-            sys.ps1 = "\x1b[1;49;31m(WRITABLE)>>>\x1b[0m"
+            # Need to figure out how to give custom colour without getting Attribute error
+            sys.ps1 = "(WRITE)>>>"
             while True:
                 import re
                 if re.match("^[A-Za-z0-9\.\+_-]+@doselect.com$", email.lower()):
@@ -457,7 +458,7 @@ class Command(BaseCommand):
                     email = raw_input("Please enter correct email : ")
 
         else:
-            sys.ps1 = "\033[01;33m(WRITABLE)>>>\033[00m"
+            sys.ps1 = "(READ)>>>"
             router.db_for_write = None
             print Figlet(font='twopoint').renderText('Entering read-only mode')
             sleep(2)
