@@ -460,7 +460,7 @@ class Command(BaseCommand):
         else:
             sys.ps1 = "(READ)>>>"
             router.db_for_write = None
-            print Figlet(font='twopoint').renderText('Entering read-only mode')
+            print Figlet(font='basic').renderText('Entering read-only mode')
             sleep(2)
 
     @signalcommand
